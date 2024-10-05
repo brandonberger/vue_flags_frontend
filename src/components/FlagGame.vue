@@ -1,7 +1,7 @@
 <template>
-	<div class="container mx-auto xl py-16">
+	<div class="flex-1 py-16">
 		<div class="flex flex-col lg:flex-row">
-			<div class="w-full lg:w-9/12">
+			<div class="w-full lg:w-8/12 mt-10">
 				<FlagDisplay
 					@submitGuess="checkGuess"
 					:feedback="feedback"
@@ -10,6 +10,7 @@
 					:answer="answer"
 				/>
 			</div>
+			<div class="lg:w-1/12"></div>
 			<div class="w-full lg:w-3/12 lg:mt-0 mt-10">
 				<ScoreBoard
 					:correct="correct"

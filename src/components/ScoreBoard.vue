@@ -1,11 +1,8 @@
 <template>
-    <div class="container score-board">
-        <h2 class="mb-8 font-bold text-2xl">Score</h2>
+    <div class="score-board text-center lg:text-left flex">
+        <h2 class="font-bold me-3">Score</h2>
         <p>
-            <strong class="text-green-500">Correct: </strong> <span>{{ correct }}</span>
-        </p>
-        <p>
-            <strong class="text-red-500">Wrong: </strong> <span>{{ wrong }}</span>
+            <strong class="correct"><span>{{ correct }}</span></strong>/100
         </p>
     </div>
 </template>
@@ -25,8 +22,18 @@ export default {
 
 <style>
 .score-board {
-    background: #efefef;
-    border-radius:24px;
+    color: white;
     padding:24px;
+    border-radius: 45px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: #071527;
+    backdrop-filter: blur(2px);
+    justify-content: space-between;
+}
+.score-board .correct {
+    color: #52BDA8;
+}
+.score-board .incorrect {
+    color: #9C3848;
 }
 </style>

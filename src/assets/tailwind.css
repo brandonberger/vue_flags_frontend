@@ -2,3 +2,33 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+#app {
+    background: radial-gradient(46.34% 46.34% at 50% 50%, #08172B 0%, #010A14 100%);
+}
+
+nav {
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(0, 0, 0, 0.54);
+    display: flex;
+    flex-direction: column;
+    height: fit-content;
+    width: fit-content;
+}
+
+nav a {
+    color: #FFF;
+    font-family: "Outfit", sans-serif;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    display: flex;
+    margin: 16px !important;
+}
+
+nav a span {
+    font-size: 16px !important;
+    margin-right: 8px;
+}
