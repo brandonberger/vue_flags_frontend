@@ -14,8 +14,18 @@ export function useCountries() {
         }
     };
 
+    const getCountrySubSet = () => {
+        countries.value = countries.value.slice(0, 2);
+    }
+
+    const randomizeCountries = () => {
+        countries.value.sort( () => Math.random() - 0.5);
+    }
+
     return {
         countries,
-        fetchCountries
+        fetchCountries,
+        randomizeCountries,
+        getCountrySubSet
     }
 }

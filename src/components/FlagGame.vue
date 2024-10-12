@@ -1,4 +1,15 @@
 <template>
+	<GameOverModal 
+		:correct="correct"
+		:numberOfFlags="numberOfFlags"
+		@submit-score-modal="toggleSubmitScoreModal"
+		@reset-game="resetGame"
+	/>
+	<SubmitScoreModal
+		:correct="correct"
+		:numberOfFlags="numberOfFlags"
+		@reset-game="resetGame"
+	/>
 	<div class="flex-1 py-16">
 		<div class="flex flex-col lg:flex-row">
 			<div class="w-full lg:w-8/12 mt-10">
@@ -14,7 +25,7 @@
 			<div class="w-full lg:w-3/12 lg:mt-0 mt-10">
 				<ScoreBoard
 					:correct="correct"
-					:wrong="wrong"
+					:numberOfFlags="numberOfFlags"
 				/>
 			</div>
 		</div>
@@ -24,6 +35,8 @@
 <script>
 import FlagDisplay from './FlagDisplay.vue';
 import ScoreBoard from './ScoreBoard.vue';
+import GameOverModal from './GameOverModal.vue';
+import SubmitScoreModal from './SubmitScoreModal.vue';
 
 import { useCountries } from '../composables/useCountries';
 import { ref, onMounted } from 'vue';
@@ -31,10 +44,12 @@ import { ref, onMounted } from 'vue';
 export default {
 	components: {
 		FlagDisplay,
-		ScoreBoard
+		ScoreBoard,
+		GameOverModal,
+		SubmitScoreModal
 	},
 	setup() {
-		const { countries, fetchCountries } = useCountries();
+		const { countries, fetchCountries, randomizeCountries } = useCountries();
 
 		const currentFlagUrl = ref('');
 		const currentCountry = ref(null);
@@ -43,17 +58,34 @@ export default {
 		const feedback = ref(null);
 		const correct = ref(0);
 		const wrong = ref(0);
+		const numberOfFlags = ref(0);
+		let currentFlagIndex = 0;
 
-		const getRandomFlag = () => {
-			const randomIndex = Math.floor(Math.random() * countries.value.length);
+		const getNextFlag = () => {
 			feedback.value = null;
-			currentCountry.value = countries.value[randomIndex];
+			currentCountry.value = countries.value[currentFlagIndex];
 			currentFlagUrl.value = currentCountry.value.flag;
 			answer.value = currentCountry.value.name;
+			currentFlagIndex++;
+		}
+
+		const resetGame = () => {
+			correct.value = 0;
+			wrong.value = 0;
+			currentFlagIndex = 0;
+			feedback.value = true;
+			setTimeout(async () => {
+				// For testing:
+				// await fetchCountries();
+				randomizeCountries();
+				// getCountrySubSet();
+				numberOfFlags.value = countries.value.length;
+				getNextFlag();
+				getPossibleAnswers();
+			}, 200);
 		}
 
 		const getPossibleAnswers = () => {
-			console.log('Get possible answers');
 			possibleAnswers.value = [];
 			for (let i = 0; i < 3; i++) {
 				const randomIndex = Math.floor(Math.random() * countries.value.length);
@@ -67,26 +99,49 @@ export default {
 			console.log('guess: ' + guess, 'answer: ' + answer.value);
 			if (guess == answer.value) {
 				correct.value++;
-				console.log('Yes!')
 				feedback.value = true;
-				setTimeout(() => {
-					getRandomFlag();
-					getPossibleAnswers();
-				}, 600);
 			} else {
 				wrong.value++;
 				feedback.value = false;
-				setTimeout(() => {
-					feedback.value = null;
-					getRandomFlag();
-					getPossibleAnswers();
-				}, 600);
 			}
+			setTimeout(() => {
+				if (!isGameOver()) {
+					getNextFlag();
+					getPossibleAnswers();
+				} else {
+					toggleGameOverModal();
+				}
+			}, 600);
+		}
+
+		const isGameOver = () => {
+			console.log(currentFlagIndex, countries.value.length)
+			if (currentFlagIndex == countries.value.length) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		const toggleGameOverModal = () => {
+			const modal = document.getElementById('game-over-modal');
+			modal.style.display = modal.style.display === 'none' ? 'flex' : 'none';
+		}
+
+		const toggleSubmitScoreModal = () => {
+			const modal = document.getElementById('submit-score-modal');
+			toggleGameOverModal();
+			modal.style.display = modal.style.display === 'none' ? 'flex' : 'none';
 		}
 
 		onMounted(async () =>  {
 			await fetchCountries();
-			getRandomFlag();
+			console.log('wat', countries.value.length);
+			randomizeCountries();
+			// For Testing
+			// getCountrySubSet();
+			numberOfFlags.value = countries.value.length;
+			getNextFlag();
 			getPossibleAnswers();
 		});
 
@@ -98,10 +153,12 @@ export default {
 			answer,
 			feedback,
 			correct,
+			numberOfFlags,
 			wrong,
-			getRandomFlag,
 			getPossibleAnswers,
-			checkGuess
+			checkGuess,
+			resetGame,
+			toggleSubmitScoreModal
 		}
 	}
 }

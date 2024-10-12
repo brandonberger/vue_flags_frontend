@@ -2,7 +2,7 @@
     <div class="score-board text-center lg:text-left flex">
         <h2 class="font-bold me-3">Score</h2>
         <p>
-            <strong class="correct"><span>{{ correct }}</span></strong>/100
+            <strong class="correct"><span>{{ correct }}</span></strong>/{{ numberOfFlags }}
         </p>
     </div>
 </template>
@@ -13,7 +13,7 @@
 export default {
     props: {
         correct: Number,
-        wrong: Number
+        numberOfFlags: Number
     }
 }
 
