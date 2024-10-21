@@ -3,15 +3,17 @@
 		:correct="correct"
 		:numberOfFlags="numberOfFlags"
 		@submit-score-modal="toggleSubmitScoreModal"
+		v-model:show="showGameOverModal"
 		@reset-game="resetGame"
 	/>
 	<SubmitScoreModal
 		:correct="correct"
 		:numberOfFlags="numberOfFlags"
-		@reset-game="resetGame"
+		@submit-score="submitScore"
+		v-model:show="showSubmitScoreModal"
 	/>
 	<div class="flex-1 py-16">
-		<div class="flex flex-col lg:flex-row">
+		<div class="flex flex-col-reverse lg:flex-row">
 			<div class="w-full lg:w-8/12 mt-10">
 				<FlagDisplay
 					@submitGuess="checkGuess"
@@ -40,6 +42,7 @@ import SubmitScoreModal from './SubmitScoreModal.vue';
 
 import { useCountries } from '../composables/useCountries';
 import { ref, onMounted } from 'vue';
+import axios from 'axios';
 
 export default {
 	components: {
@@ -49,7 +52,10 @@ export default {
 		SubmitScoreModal
 	},
 	setup() {
-		const { countries, fetchCountries, randomizeCountries } = useCountries();
+		const { countries, fetchCountries, randomizeCountries, getCountrySubSet } = useCountries();
+
+		console.log(getCountrySubSet);
+
 
 		const currentFlagUrl = ref('');
 		const currentCountry = ref(null);
@@ -60,6 +66,9 @@ export default {
 		const wrong = ref(0);
 		const numberOfFlags = ref(0);
 		let currentFlagIndex = 0;
+
+		const showSubmitScoreModal = ref(false);
+		const showGameOverModal = ref(false);
 
 		const getNextFlag = () => {
 			feedback.value = null;
@@ -74,9 +83,13 @@ export default {
 			wrong.value = 0;
 			currentFlagIndex = 0;
 			feedback.value = true;
+
+			showSubmitScoreModal.value = false;
+			showGameOverModal.value = false;
+
 			setTimeout(async () => {
 				// For testing:
-				// await fetchCountries();
+				await fetchCountries();
 				randomizeCountries();
 				// getCountrySubSet();
 				numberOfFlags.value = countries.value.length;
@@ -124,14 +137,30 @@ export default {
 		}
 
 		const toggleGameOverModal = () => {
-			const modal = document.getElementById('game-over-modal');
-			modal.style.display = modal.style.display === 'none' ? 'flex' : 'none';
+			showGameOverModal.value = !showGameOverModal.value;
 		}
 
 		const toggleSubmitScoreModal = () => {
-			const modal = document.getElementById('submit-score-modal');
-			toggleGameOverModal();
-			modal.style.display = modal.style.display === 'none' ? 'flex' : 'none';
+			showGameOverModal.value = false;
+			showSubmitScoreModal.value = !showSubmitScoreModal.value;
+		}
+
+		const submitScore = async (name, score) => {
+			console.log(name);
+			console.log(score);
+
+			try {
+				const response = await axios.post('http://localhost:8000/submit-score', {					method: 'POST',
+					name: name,
+					score: score
+				});
+				toggleSubmitScoreModal();
+				resetGame();
+				console.log('Sub success', response.data);
+			} catch (error) {
+				console.error(error);
+			}
+
 		}
 
 		onMounted(async () =>  {
@@ -157,8 +186,11 @@ export default {
 			wrong,
 			getPossibleAnswers,
 			checkGuess,
-			resetGame,
-			toggleSubmitScoreModal
+			toggleSubmitScoreModal,
+			submitScore,
+			showGameOverModal,
+			showSubmitScoreModal,
+			resetGame
 		}
 	}
 }

@@ -1,15 +1,15 @@
 <template>
-    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center" id="submit-score-modal" style="display: none;">
+    <div v-if="show" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center" id="submit-score-modal">
         <div id="modal-body" class="bg-white rounded-lg shadow-lg w-11/12 md:w-1/2 lg:w-1/3 p-6 relative">
-            <button id="close-btn" class="absolute top-3 right-3 text-gray-600 hover:text-gray-900" onclick="toggleModal()">
+            <button id="close-btn" class="absolute top-3 right-3 text-gray-600 hover:text-gray-900" @click="$emit('update:show', 0)">
                 &times;
             </button>
             <h2 class="text-xl font-bold mb-4">Submit Score!</h2>
             <p class="text-gray-200 mb-4">
                 You got <span class="green">{{ correct }}</span> flags correct out of {{ numberOfFlags }} flags.
             </p>
-            <input type="text" class="text-gray-600 w-full p-2 rounded border border-gray-300" placeholder="Enter your name" /> 
-            <button class="primary-btn px-4 py-2 mt-4 bg-blue-500 text-white rounded hover:bg-blue-600" @click="$emit('submit-score')">Submit</button>
+            <input type="text" v-model="name" class="text-gray-600 w-full p-2 rounded border border-gray-300" placeholder="Enter your name" /> 
+            <button class="primary-btn px-4 py-2 mt-4 bg-blue-500 text-white rounded hover:bg-blue-600" @click="submitScore">Submit</button>
         </div>
     </div>
 </template>
@@ -17,9 +17,20 @@
 <script>
 
 export default {
+    data() {
+        return {
+            name: ''
+        }
+    },
     props: {
         correct: Number,
-        numberOfFlags: Number
+        numberOfFlags: Number,
+        show: Boolean,
+    },
+    methods: {
+        submitScore() {
+            this.$emit('submit-score', this.name, this.correct);
+        }
     }
 }
 

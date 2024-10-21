@@ -1,7 +1,7 @@
 <template>
-    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center" id="game-over-modal" style="display: none;">
+    <div v-if="show" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center" id="game-over-modal">
         <div id="modal-body" class="bg-white rounded-lg shadow-lg w-11/12 md:w-1/2 lg:w-1/3 p-6 relative">
-            <button id="close-btn" class="absolute top-3 right-3 text-gray-600 hover:text-gray-900" onclick="toggleGameOverModal()">
+            <button id="close-btn" class="absolute top-3 right-3 text-gray-600 hover:text-gray-900" @click="$emit('update:show', 0)">
                 &times;
             </button>
             <h2 class="text-xl font-bold mb-4">Game Over!</h2>
@@ -21,7 +21,8 @@
 export default {
     props: {
         correct: Number,
-        numberOfFlags: Number
+        numberOfFlags: Number,
+        show: Boolean
     }
 }
 
