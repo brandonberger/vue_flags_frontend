@@ -1,6 +1,6 @@
 <template>
     <div class="container mx-auto p-4">
-        <div class="grid grid-cols-4 gap-4">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div v-for="(country, index) in sortedCountries" :key="index" class="country-card bg-gray-100 rounded-xl p-10 text-center"> 
                 <p class="text-lg text-gray-100">{{ country.name }} </p>
                 <img :src="country.flag" height="30px"/>
